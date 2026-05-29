@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derivatives in Agro-Product Technology: Oil Palm Yield Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+        
+        <header class="bg-emerald-800 text-white p-6 md:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="bg-emerald-600 text-emerald-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        SFP: Agro Product Technology Application
+                    </span>
+                    <h1 class="text-2xl md:text-4xl font-bold mt-2">Biomathematics: Optimizing Malaysian Oil Palm Yield</h1>
+                </div>
+                <div class="text-emerald-200 text-sm border-l-2 border-emerald-600 pl-4">
+                    <strong>Context:</strong> Precision Agriculture<br>
+                    <strong>Tool:</strong> Differential Calculus & Chart.js
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-8 space-y-8">
+            
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-emerald-900 border-b pb-2 border-emerald-100">The Bioscience Problem</h2>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        In Malaysian palm oil estates (such as those managed by MPOB or FELDA), tracking the <strong>Fresh Fruit Bunch (FFB)</strong> yield per hectare relative to nitrogen fertilizer application is vital. While nitrogen increases growth, over-fertilization leads to toxicity, environmental runoff, and diminished returns. 
+                    </p>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        By finding the <strong>derivative $f'(x)$</strong> of our yield curve, agro-technologists can determine the exact point of diminishing returns—where adding more fertilizer actually slows down the rate of production increase, or even causes it to drop.
+                    </p>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-500">
+                        <strong>Data Reference baseline:</strong> Adapted from the <em>Malaysian Palm Oil Board (MPOB) Fruit Bunch Yield Optimization Models</em> and agronomic response curves for Tenera cultivars.
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50 rounded-xl p-5 border border-emerald-100 space-y-4">
+                    <h2 class="text-xl font-bold text-emerald-900">The Mathematical Model</h2>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">Yield Function $f(x)$ (Tonnes/Ha)</span>
+                            <div class="bg-white p-3 rounded-md font-mono text-sm border border-emerald-200 shadow-xs mt-1">
+                                $f(x) = -0.0005x^2 + 0.16x + 12$
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">First Derivative $f'(x)$ (Rate of Change)</span>
+                            <div class="bg-white p-3 rounded-md font-mono text-sm border border-emerald-200 shadow-xs mt-1 text-rose-700 font-bold">
+                                $f'(x) = -0.001x + 0.16$
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-emerald-800 leading-relaxed italic">
+                        Where <strong>$x$</strong> is the Nitrogen input ($\text{kg/ha/year}$) ranging from $0$ to $240\text{ kg}$, and <strong>$f(x)$</strong> is the total annual FFB yield ($\text{tonnes/ha}$).
+                    </p>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Interactive Response Curve Animation</h2>
+                        <p class="text-xs text-slate-500">Click anywhere inside the chart area to calculate the instantaneous derivative at that exact fertilizer level.</p>
+                    </div>
+                    <button onclick="animateChart()" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-xs transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18"></path></svg>
+                        Replay Animation
+                    </button>
+                </div>
+
+                <div class="bg-slate-900 rounded-xl p-4 shadow-inner relative min-h-[350px] flex items-center justify-center">
+                    <canvas id="yieldChart" class="w-full h-96"></canvas>
+                </div>
+            </section>
+
+            <section id="resultPanel" class="bg-slate-100 rounded-xl p-6 border-2 border-dashed border-slate-300 transition-all duration-300">
+                <div id="promptMessage" class="text-center text-slate-500 py-4">
+                    <svg class="w-12 h-12 mx-auto mb-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                    <p class="font-medium">No point selected yet</p>
+                    <p class="text-xs mt-1">Click on the line chart above to calculate the Agro-Product derivative value.</p>
+                </div>
+
+                <div id="calcData" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="space-y-1">
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold block">Selected Input ($x$)</span>
+                        <div class="text-2xl font-bold text-slate-800" id="valX">120 kg/ha</div>
+                        <span class="text-xs text-slate-400 block">Nitrogen Application</span>
+                    </div>
+                    <div class="space-y-1 border-y md:border-y-0 md:border-x border-slate-200 py-4 md:py-0 md:px-6">
+                        <span class="text-xs uppercase tracking-wider text-rose-600 font-semibold block">Derivative Yield $f'(x)$</span>
+                        <div class="text-3xl font-extrabold text-rose-600" id="valYPrime">+0.040</div>
+                        <span class="text-xs text-slate-400 block">tonnes of FFB per kg of Nitrogen</span>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-xs uppercase tracking-wider text-emerald-700 font-semibold block">Layman Assessment</span>
+                        <div id="laymanText" class="text-sm text-slate-700 bg-white p-3 rounded-lg border border-slate-200 shadow-2xs font-medium">
+                            The crop is thriving and efficiently transforming fertilizer into growth.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="bg-slate-100 text-center text-xs text-slate-500 py-4 border-t border-slate-200">
+            Agro Product Technology Simulation • Created for Calculus Application in Bioscience
+        </footer>
+    </div>
+
+    <script>
+        let yieldChart;
+        
+        // Generate realistic Malaysian FFB response data points using the formula f(x) = -0.0005x^2 + 0.16x + 12
+        const labels = [];
+        const dataY = [];
+        for (let x = 0; x <= 240; x += 10) {
+            labels.push(x);
+            let y = (-0.0005 * Math.pow(x, 2)) + (0.16 * x) + 12;
+            dataY.push(parseFloat(y.toFixed(3)));
+        }
+
+        // Initialize and Build Chart.js Function
+        function initChart() {
+            const ctx = document.getElementById('yieldChart').getContext('2d');
+            
+            yieldChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'FFB Crop Yield f(x) (Tonnes/Hectare)',
+                        data: dataY,
+                        borderColor: '#10b981', // Emerald 500
+                        borderWidth: 4,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#047857'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f8fafc', font: { weight: 'bold' } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Yield: ${context.parsed.y} Tonnes/Ha at ${context.parsed.x} kg/ha N`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Nitrogen Fertilizer Input (kg/ha/year)', color: '#94a3b8' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Annual Fresh Fruit Bunch Yield (Tonnes/Ha)', color: '#94a3b8' },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            min: 10
+                        }
+                    },
+                    // Handle user clicking on graph space
+                    onClick: (e) => {
+                        const points = yieldChart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
+                        if (points.length > 0) {
+                            const index = points[0].index;
+                            const xVal = yieldChart.data.labels[index];
+                            calculateDerivativeAtPoint(xVal);
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Calculation and Layman Interpretation Logic
+        function calculateDerivativeAtPoint(x) {
+            // Function f'(x) = -0.001x + 0.16
+            const derivativeVal = (-0.001 * x) + 0.16;
+            const currentYield = (-0.0005 * Math.pow(x, 2)) + (0.16 * x) + 12;
+
+            // UI Elements
+            document.getElementById('promptMessage').classList.add('hidden');
+            document.getElementById('calcData').classList.remove('hidden');
+            
+            const panel = document.getElementById('resultPanel');
+            panel.className = "rounded-xl p-6 border-2 transition-all duration-300 bg-white shadow-md ";
+
+            document.getElementById('valX').innerText = `${x} kg/ha`;
+            document.getElementById('valYPrime').innerText = (derivativeVal >= 0 ? "+" : "") + derivativeVal.toFixed(3);
+
+            let message = "";
+            if (derivativeVal > 0.05) {
+                panel.classList.add('border-emerald-500');
+                message = `🌱 **Highly Efficient Growth:** Every single kg of nitrogen added here yields an excellent boost to production (${(derivativeVal*1000).toFixed(0)} kg more fruit bunches per hectare). Keep pushing fertilization up to this level!`;
+            } else if (derivativeVal <= 0.05 && derivativeVal > 0) {
+                panel.classList.add('border-amber-400');
+                message = `⚠️ **Diminishing Returns Set In:** You are reaching the physiological limits of the palm cultivar. The yield is still increasing, but each extra kg of fertilizer generates very little extra output. Watch profit margins closely.`;
+            } else if (Math.abs(derivativeVal) === 0 || (derivativeVal <= 0 && derivativeVal > -0.01)) {
+                panel.classList.add('border-blue-500');
+                message = `🎯 **Biological Optimum Point:** $f'(x) \\approx 0$. You have reached peak efficiency and absolute maximum yield capacity (${currentYield.toFixed(2)} Tonnes/Ha). Any further nitrogen is completely wasted money.`;
+            } else {
+                panel.classList.add('border-rose-500');
+                message = `🛑 **Nitrogen Toxicity & Pollution:** The derivative has turned negative! Adding more nitrogen hurts the plant biology, destroys soil pH levels, and lowers your total yield. Reduce your application immediately!`;
+            }
+
+            document.getElementById('laymanText').innerHTML = message;
+        }
+
+        function animateChart() {
+            if(yieldChart) {
+                yieldChart.reset();
+                yieldChart.update();
+            }
+        }
+
+        // Initialize script execution on page display
+        window.onload = () => {
+            initChart();
+        };
+    </script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>
