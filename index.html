@@ -1,0 +1,419 @@
+``html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Derivative f′(x) in Malaysian Bioscience: Oil Palm Fresh Fruit Bunch (FFB) Growth Rate</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Chart.js annotation plugin (for vertical line and labels) -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel: #171b22;
+      --accent: #1f9d55;
+      --muted: #a3a3a3;
+      --text: #e6e6e6;
+      --warn: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --teal: #14b8a6;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    header {
+      padding: 18px 18px 8px;
+      background: linear-gradient(180deg, #12161d, #0e1116);
+      border-bottom: 1px solid #232832;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid #232832;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    h3 {
+      margin: 12px 0 6px;
+      font-size: 15px;
+      color: #cbd5e1;
+    }
+    p, li {
+      color: #d7d7d7;
+    }
+    code, .chip {
+      background: #0f1320;
+      color: #e6e6e6;
+      border: 1px solid #273043;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .legend { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .small { font-size: 13px; color: var(--muted); }
+    .em { color: #e2e8f0; }
+    .formula { font-size: 15px; line-height: 1.35; margin: 6px 0; }
+    .click-hint { color: var(--warn); font-weight: 600; }
+    .pill {
+      display: inline-block; padding: 6px 10px; border-radius: 999px;
+      background: #102a19; color: #86efac; border: 1px solid #1d4d2b; font-size: 12px;
+    }
+    .tbl {
+      width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px;
+    }
+    .tbl th, .tbl td {
+      border: 1px solid #273043; padding: 6px 8px; text-align: left;
+    }
+    .tbl th { background: #12161d; color: #dbeafe; }
+    .note { color: #cbd5e1; font-size: 13px; }
+    .src a { color: #9dd1ff; text-decoration: none; }
+    .src a:hover { text-decoration: underline; }
+    footer { max-width: 1100px; margin: 6px auto 18px; padding: 0 16px; color: var(--muted); font-size: 13px; }
+    canvas { max-height: 520px; }
+    @media (max-width: 960px) {
+      .wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Visualising f(x) and f′(x) with Chart.js — Oil Palm FFB Growth in Malaysia</h1>
+  <div class="sub">Program: SFP: Agro Product Technology · Topic: Rate of change (derivative) in a realistic bioscience process</div>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h2>Interactive Graph — f(x): FFB weight vs. weeks after pollination, and f′(x): growth rate</h2>
+    <div class="row">
+      <div class="legend"><span class="dot" style="background: var(--blue)"></span><span>f(x) — FFB weight (kg)</span></div>
+      <div class="legend"><span class="dot" style="background: var(--purple)"></span><span>f′(x) — Growth rate (kg/week)</span></div>
+      <span class="pill">Click anywhere on the chart to compute f′(x) at that week</span>
+    </div>
+    <canvas id="ffbChart"></canvas>
+
+    <div class="grid2" style="margin-top:12px;">
+      <div class="card" style="padding:10px;">
+        <h3>Selected point</h3>
+        <div id="pointOut" class="em">Click on the graph to sample a week and see the instantaneous growth rate.</div>
+      </div>
+      <div class="card" style="padding:10px;">
+        <h3>Layman explanation</h3>
+        <div id="layman" class="em">The derivative f′(x) tells you how fast the bunch is gaining weight at that week. Higher f′(x) = faster filling; near harvest, f′(x) → 0.</div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="card">
+    <h2>Bioscience Scenario: Oil Palm FFB Development</h2>
+    <p>
+      In Malaysian estates, an oil palm fresh fruit bunch (FFB) grows for ~20–24 weeks after effective pollination before harvest.
+      The rate of growth is not constant: it accelerates in the middle phase (oil accumulation) and slows as the bunch approaches physiological maturity.
+      Understanding <b>f′(x)</b>, the instantaneous rate of change, helps schedule harvests, plan labour and logistics, and anticipate oil extraction rates in mills.
+    </p>
+
+    <h3>Model and Formulas</h3>
+    <p class="formula">
+      We model average bunch weight with a logistic curve (x in weeks after pollination, kg as output):<br/>
+      <code>f(x) = K / (1 + e^{-r (x - x0)})</code>
+    </p>
+    <p class="formula">
+      The derivative (growth rate) is:<br/>
+      <code>f′(x) = (K · r · e^{-r (x - x0)}) / (1 + e^{-r (x - x0)})^2</code>
+    </p>
+    <ul>
+      <li><b>K</b> ≈ 25 kg (typical upper bunch weight for tenera palms in good conditions)</li>
+      <li><b>r</b> ≈ 0.40 week⁻¹ (steepness of growth)</li>
+      <li><b>x0</b> ≈ 14 weeks (inflection point where growth is fastest)</li>
+    </ul>
+    <p class="small note">
+      These values are realistic approximations used for teaching. Actual estates calibrate parameters by cultivar, age, site, and season.
+    </p>
+
+    <h3>Real/Realistic Reference Points (for context)</h3>
+    <table class="tbl">
+      <thead><tr><th>Data webpage/name</th><th>Relevance</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a class="src" href="https://www.aspcapro.org/resource/animal-weight-monitoring-form" target="blank" rel="noopener">ASPCApro: Animal Weight Monitoring Form</a></td>
+          <td>Example of structured weight tracking over time (methodology analogue).</td>
+        </tr>
+        <tr>
+          <td><a class="src" href="https://www.cftc.gov/sites/default/files/opa/speeches/opadial-68.htm" target="blank" rel="noopener">CFTC speech on ag derivatives</a></td>
+          <td>Illustrates how derivatives help manage agricultural risk (economic analogue to f′(x) as change metric).</td>
+        </tr>
+        <tr>
+          <td><a class="src" href="https://www.sciencedirect.com/science/article/pii/S0168169925001395" target="blank" rel="noopener">Learning‑based estimation of cattle weight gain (2025)</a></td>
+          <td>Demonstrates rate‑of‑gain modeling in livestock (parallel to crop growth rate concepts).</td>
+        </tr>
+        <tr>
+          <td><a class="src" href="https://www.chartjs.org/docs/latest/samples/" target="blank" rel="noopener">Chart.js Samples</a></td>
+          <td>Library reference for animations and interactions used in this app.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="small">
+      Note: The above pages are methodological/contextual references. The numeric FFB curve below is a realistic teaching dataset calibrated to common Malaysian practice ranges (K≈25 kg; harvest 20–22 WAP).
+    </p>
+  </aside>
+
+  <section class="card" style="grid-column: 1 / -1;">
+    <h2>How to use this demo</h2>
+    <ol>
+      <li>Observe the blue curve f(x): predicted FFB weight at each week after pollination.</li>
+      <li>Observe the purple curve f′(x): predicted growth rate (kg/week). It peaks near the inflection (~week 14) and declines toward harvest.</li>
+      <li>Click on the chart at any week x. The app computes f(x) and f′(x) using the above formulas and explains what that rate means in plain language.</li>
+      <li>Use this concept in SFP: Agro Product Technology to justify harvest timing, labour planning, and mill intake scheduling based on peak or declining growth rates.</li>
+    </ol>
+    <h3>Key takeaways</h3>
+    <ul>
+      <li><b>Derivative = rate</b>: f′(x) quantifies how fast mass (or moisture/oil) is accumulating.</li>
+      <li><b>Peak f′(x)</b> identifies the rapid filling phase; <b>low f′(x)</b> signals approaching maturity/harvest.</li>
+      <li><b>Operations</b>: When f′(x) starts dropping consistently, schedule harvest rounds to capture optimal quality without delay losses.</li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  This single-file app uses Chart.js for smooth animation and an annotation overlay for click readouts. All calculations run in your browser.
+</footer>
+
+<script>
+  // Parameters for the logistic growth model (teaching-calibrated but realistic)
+  const K  = 25.0;   // kg, asymptotic max FFB weight
+  const r  = 0.40;   // per week, steepness
+  const x0 = 14.0;   // weeks, inflection (max growth rate)
+
+  // Functions: f(x) and f'(x)
+  function f(x) {
+    const z = Math.exp(-r  (x - x0));
+    return K / (1 + z);
+  }
+  function fp(x) {
+    const z = Math.exp(-r  (x - x0));
+    return (K  r  z) / Math.pow(1 + z, 2);
+  }
+
+  // Generate x axis (weeks after pollination) and y values
+  const xmin = 0, xmax = 26, step = 0.25;
+  const xs = [];
+  const ysf  = [];
+  const ysfp = [];
+  for (let x = xmin; x <= xmax + 1e-9; x += step) {
+    xs.push(Number(x.toFixed(2)));
+    ysf.push(f(x));
+    ysfp.push(fp(x));
+  }
+
+  // Build chart
+  const ctx = document.getElementById('ffbChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: xs,
+      datasets: [
+        {
+          label: 'FFB weight f(x) (kg)',
+          data: ysf,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.12)',
+          pointRadius: 0,
+          borderWidth: 2.5,
+          tension: 0.25,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Growth rate f′(x) (kg/week)',
+          data: ysfp,
+          borderColor: '#8b5cf6',
+          backgroundColor: 'rgba(139,92,246,0.12)',
+          pointRadius: 0,
+          borderWidth: 2.5,
+          tension: 0.25,
+          yAxisID: 'y1',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 1600,
+        easing: 'easeInOutQuart'
+      },
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Weeks after pollination (WAP)', color: '#cbd5e1' },
+          grid: { color: 'rgba(148,163,184,0.15)' },
+          ticks: { color: '#cbd5e1' }
+        },
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'FFB weight (kg)', color: '#cbd5e1' },
+          min: 0,
+          max: 28,
+          grid: { color: 'rgba(148,163,184,0.1)' },
+          ticks: { color: '#cbd5e1' }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Growth rate (kg/week)', color: '#cbd5e1' },
+          min: 0,
+          max: 3.0,
+          grid: { drawOnChartArea: false },
+          ticks: { color: '#cbd5e1' }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#e6e6e6' }
+        },
+        annotation: {
+          annotations: {
+            hoverLine: {
+              type: 'line',
+              xMin: 10, xMax: 10,
+              borderColor: '#f59e0b',
+              borderWidth: 2,
+              borderDash: [6, 6],
+              display: false
+            },
+            hoverPointF: {
+              type: 'point',
+              xValue: 10,
+              yValue: f(10),
+              backgroundColor: '#3b82f6',
+              radius: 4,
+              display: false
+            },
+            hoverPointFp: {
+              type: 'point',
+              xValue: 10,
+              yValue: fp(10),
+              backgroundColor: '#8b5cf6',
+              radius: 4,
+              display: false
+            }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            title: (items) => Week ${items[0].label},
+            label: (ctx) => {
+              const lab = ctx.dataset.label || '';
+              return ${lab}: ${ctx.parsed.y.toFixed(2)};
+            }
+          }
+        }
+      },
+      onClick: (evt) => handleClick(evt)
+    }
+  });
+
+  // Utility: find nearest x on our uniform grid to a raw x
+  function snapToGrid(xRaw) {
+    const i = Math.round((xRaw - xmin) / step);
+    const x = xmin + i * step;
+    return Math.min(xmax, Math.max(xmin, Number(x.toFixed(2))));
+  }
+
+  // Translate pixel to chart value on x scale
+  function xFromEvent(evt) {
+    const chartArea = chart.chartArea;
+    const xScale = chart.scales.x;
+    if (!xScale) return null;
+    const rect = chart.canvas.getBoundingClientRect();
+    const px = evt.clientX - rect.left;
+    // Constrain to chart area for better UX
+    const clamped = Math.min(chartArea.right, Math.max(chartArea.left, px));
+    return xScale.getValueForPixel(clamped);
+  }
+
+  // Handle click: compute f(x), f′(x), annotate and explain
+  function handleClick(evt) {
+    const xValRaw = xFromEvent(evt);
+    if (xValRaw == null) return;
+    const x = snapToGrid(xValRaw);
+    const y = f(x);
+    const dy = fp(x);
+
+    // Update annotation overlays
+    const ann = chart.options.plugins.annotation.annotations;
+    ann.hoverLine.xMin = x; ann.hoverLine.xMax = x; ann.hoverLine.display = true;
+    ann.hoverPointF.xValue = x; ann.hoverPointF.yValue = y; ann.hoverPointF.display = true;
+    ann.hoverPointFp.xValue = x; ann.hoverPointFp.yValue = dy; ann.hoverPointFp.display = true;
+    chart.update();
+
+    // Update text panels
+    document.getElementById('pointOut').innerHTML =
+      At week <b>${x.toFixed(2)}</b>: f(x) = <b>${y.toFixed(2)} kg</b>, f′(x) = <b>${dy.toFixed(2)} kg/week</b>.;
+
+    // Layman explanation based on rate magnitude and phase
+    let phase;
+    if (x < x0 - 3) phase = "early development — cells forming and setting potential";
+    else if (x <= x0 + 3) phase = "rapid oil accumulation — fastest fill";
+    else phase = "late maturation — slowing as harvest approaches";
+
+    let meaning;
+    if (dy > 2.0) meaning = "The bunch is packing on weight very quickly right now.";
+    else if (dy > 1.0) meaning = "The bunch is still gaining weight at a healthy rate.";
+    else if (dy > 0.3) meaning = "Growth is tapering off; maturity is approaching.";
+    else meaning = "Growth has nearly stopped; this is near harvest readiness.";
+
+    document.getElementById('layman').innerHTML =
+      Week ${x.toFixed(0)} is ${phase}. ${meaning} In practice, managers increase scouting for loose fruits and schedule harvest rounds when f′(x) is declining.;
+  }
+
+  // Initial hover hint (optional: show a sample point around x0)
+  (function initPreview() {
+    const x = x0;
+    const ann = chart.options.plugins.annotation.annotations;
+    ann.hoverLine.xMin = x; ann.hoverLine.xMax = x; ann.hoverLine.display = true;
+    ann.hoverPointF.xValue = x; ann.hoverPointF.yValue = f(x); ann.hoverPointF.display = true;
+    ann.hoverPointFp.xValue = x; ann.hoverPointFp.yValue = fp(x); ann.hoverPointFp.display = true;
+    chart.update();
+  })();
+</script>
+</body>
+</html>
+``
